@@ -10,6 +10,15 @@ class AuctionRepository {
     return mongoose.connection && mongoose.connection.readyState === 1;
   }
 
+  async findAll() {
+    if (this.isMongoConnected()) {
+      return await Auction.find().sort({ createdAt: -1 });
+    }
+    return [...this.memoryItems].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
   async findLatest() {
     if (this.isMongoConnected()) {
       return await Auction.findOne().sort({ createdAt: -1 });
@@ -33,6 +42,7 @@ class AuctionRepository {
     const newItem = {
       _id: 'mock_' + Date.now(),
       ...data,
+      bids: data.bids || [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
