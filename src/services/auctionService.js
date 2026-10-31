@@ -159,9 +159,10 @@ class AuctionService {
     const currentHighest = hasExistingBids ? auction.currentHighestBid : auction.startingPrice;
 
     if (hasExistingBids) {
-      if (numericAmount <= currentHighest) {
+      const minRequired = auction.currentHighestBid + 100;
+      if (numericAmount < minRequired) {
         const error = new Error(
-          `Bid rejected: Your bid of ₹${numericAmount.toLocaleString('en-IN')} must strictly exceed current highest bid of ₹${currentHighest.toLocaleString('en-IN')}.`
+          `Bid rejected: Every new bid must be at least ₹100 higher than the current highest bid of ₹${auction.currentHighestBid.toLocaleString('en-IN')} (Minimum required: ₹${minRequired.toLocaleString('en-IN')}).`
         );
         error.statusCode = 400;
         throw error;
